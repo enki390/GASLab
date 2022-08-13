@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
+#include "AbilitySystemComponent.h"
 #include "GASAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -19,5 +20,5 @@
 UCLASS()
 class GASLAB_API UGASAttributeSet : public UAttributeSet
 {
-	GENERATED_BODY()	
+	GENERATED_BODY()
 };

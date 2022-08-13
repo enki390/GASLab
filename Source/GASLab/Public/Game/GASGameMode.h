@@ -13,5 +13,4 @@ UCLASS()
 class GASLAB_API AGASGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
 };

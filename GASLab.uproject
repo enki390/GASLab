@@ -1,23 +1,23 @@
 {
-	"FileVersion": 3,
-	"EngineAssociation": "4.27",
-	"Category": "",
-	"Description": "",
-	"Modules": [
-		{
-			"Name": "GASLab",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"GameplayAbilities"
-			]
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "GameplayAbilities",
-			"Enabled": true
-		}
-	]
+  "FileVersion": 3,
+  "EngineAssociation": "4.27",
+  "Category": "",
+  "Description": "",
+  "Modules": [
+    {
+      "Name": "GASLab",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "AdditionalDependencies": [
+        "Engine",
+        "GameplayAbilities"
+      ]
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "GameplayAbilities",
+      "Enabled": true
+    }
+  ]
 }

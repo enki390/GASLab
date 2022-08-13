@@ -11,7 +11,7 @@ void AGASPlayerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	AGASPlayerState* PS = GetPlayerState<AGASPlayerState>();
-	if(PS)
+	if (PS)
 	{
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 	}

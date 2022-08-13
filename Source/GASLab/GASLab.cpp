@@ -3,5 +3,4 @@
 #include "GASLab.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, GASLab, "GASLab" );
- 
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, GASLab, "GASLab");

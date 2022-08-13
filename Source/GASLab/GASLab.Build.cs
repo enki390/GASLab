@@ -8,8 +8,9 @@ public class GASLab : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
-		PrivateDependencyModuleNames.AddRange( new string[]
+		PublicDependencyModuleNames.AddRange(new[]
+			{ "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
+		PrivateDependencyModuleNames.AddRange(new[]
 		{
 			"GameplayTags",
 			"GameplayAbilities",

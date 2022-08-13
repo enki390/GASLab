@@ -13,5 +13,8 @@ UCLASS()
 class GASLAB_API UGASAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
-	
+
+public:
+	bool CharacterAbilitiesGiven = false;
+	bool StartupEffectsApplied = false;
 };
