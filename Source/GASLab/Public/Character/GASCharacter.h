@@ -15,15 +15,18 @@ class GASLAB_API AGASCharacter : public ACharacter, public IAbilitySystemInterfa
 
 public:
 	// Sets default values for this character's properties
-	AGASCharacter();
+	AGASCharacter(const FObjectInitializer& ObjectInitializer);
 
+	/////////////////////////////////////////////////////////////////
+	// Override parent interface
+	////////////////////////////////////////////////////////////////
+public:
 	// Implement IAbilitySystemInterface
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	/**
-	 * Getters for attributes
-	 **/
-
+	/////////////////////////////////////////////////////////////////
+	// Attribute accessors
+	////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintPure, Category = "GASLab|GASCharacter")
 	virtual bool IsAlive() const;
 
@@ -58,18 +61,14 @@ public:
 	virtual int32 GetAbilityLevel(EGASAbilityInputID AbilityID) const;
 	
 protected:
-	/**
-	 * Setters for attributes
-	 */
-
 	virtual void SetHealth(float InHealth);
 	virtual void SetMana(float InMana);
 	virtual void SetStamina(float InStamina);
 
-	/**
-	 * Ability system initializer
-	 */
-
+	/////////////////////////////////////////////////////////////////
+	// Ability system 
+	////////////////////////////////////////////////////////////////
+protected:
 	virtual void AddCharacterAbilities();
 	virtual void InitializeAttributes();
 	virtual void AddStartupEffects();
