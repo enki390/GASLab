@@ -13,5 +13,7 @@ UCLASS()
 class GASLAB_API AGASAIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
+public:
+	AGASAIController();
 };

@@ -15,4 +15,4 @@ UE_DEFINE_GAMEPLAY_TAG(Tag_Effect_HitReact_Left, "Effect.HitReact.Left");
 UE_DEFINE_GAMEPLAY_TAG(Tag_Effect_RemoveOnDeath, "Effect.RemoveOnDeath");
 
 UE_DEFINE_GAMEPLAY_TAG(Tag_State_Dead, "State.Dead");
-UE_DEFINE_GAMEPLAY_TAG(Tag_State_Debug_Stun, "State.Debug.Stun");
+UE_DEFINE_GAMEPLAY_TAG(Tag_State_Debuf_Stun, "State.Debuf.Stun");

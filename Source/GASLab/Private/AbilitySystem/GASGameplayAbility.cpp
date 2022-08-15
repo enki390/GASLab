@@ -10,7 +10,7 @@ UGASGameplayAbility::UGASGameplayAbility()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	ActivationBlockedTags.AddTag(Tag_State_Dead);
-	ActivationBlockedTags.AddTag(Tag_State_Debug_Stun);
+	ActivationBlockedTags.AddTag(Tag_State_Debuf_Stun);
 }
 
 void UGASGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
