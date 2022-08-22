@@ -5,6 +5,8 @@
 #include "AbilitySystem/GASAbilitySystemComponent.h"
 #include "AbilitySystem/GASGameplayAbility.h"
 #include "AbilitySystem/Attributes/GASCharacterAttributeSet.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -13,11 +15,46 @@ AGASCharacter::AGASCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 }
 
 UAbilitySystemComponent* AGASCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent.Get();
+}
+
+void AGASCharacter::Die()
+{
+	RemoveCharacterAbilities();
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->StopMovementImmediately();
+
+	if(AbilitySystemComponent.IsValid())
+	{
+		AbilitySystemComponent->CancelAllAbilities();
+
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(Tag_Effect_RemoveOnDeath);
+
+		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
+		AbilitySystemComponent->AddLooseGameplayTag(Tag_State_Dead);
+	}
+
+	if(DeadMontage)
+	{
+		PlayAnimMontage(DeadMontage);
+	}
+	else
+	{
+		FinishDying();
+	}
+}
+
+void AGASCharacter::FinishDying()
+{
+	SetLifeSpan(LifeSpanAfterDead);
 }
 
 bool AGASCharacter::IsAlive() const
@@ -133,6 +170,29 @@ void AGASCharacter::SetStamina(float InStamina)
 	{
 		AttributeSet->SetStamina(InStamina);
 	}
+}
+
+void AGASCharacter::RemoveCharacterAbilities()
+{
+	if(!HasAuthority() || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->CharacterAbilitiesGiven)
+	{
+		return;
+	}
+
+	TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
+	for(const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if((Spec.SourceObject == this) && CharacterAbilities.Contains(Spec.Ability->GetClass()))
+		{
+			AbilitiesToRemove.Add(Spec.Handle);
+		}
+	}
+
+	for(int32 i = 0; i < AbilitiesToRemove.Num(); ++i)
+	{
+		AbilitySystemComponent->ClearAbility(AbilitiesToRemove[i]);
+	}
+	AbilitySystemComponent->CharacterAbilitiesGiven = false;
 }
 
 void AGASCharacter::AddCharacterAbilities()

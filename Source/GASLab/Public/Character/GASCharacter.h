@@ -24,6 +24,11 @@ public:
 	// Implement IAbilitySystemInterface
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual void Die();
+
+	UFUNCTION(BlueprintCallable, Category = "GASLab|GASCharacter|")
+	virtual void FinishDying();
+	
 	/////////////////////////////////////////////////////////////////
 	// Attribute accessors
 	////////////////////////////////////////////////////////////////
@@ -68,6 +73,9 @@ protected:
 	/////////////////////////////////////////////////////////////////
 	// Ability system 
 	////////////////////////////////////////////////////////////////
+public:
+	virtual void RemoveCharacterAbilities();
+	
 protected:
 	virtual void AddCharacterAbilities();
 	virtual void InitializeAttributes();
@@ -78,7 +86,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GASLab|GASCharacter")
 	FText CharacterName;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GASLab|GASCharacter")
+	class UAnimMontage* DeadMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GASLab|GASCharacter")
+	float LifeSpanAfterDead = 5.0f;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GASLab|Abilities")
 	TArray<TSubclassOf<class UGASGameplayAbility>> CharacterAbilities;
 

@@ -37,10 +37,39 @@ UE4 GAS 스터디 프로젝트.
 
 ### 1.2.2 시스템 설정 및 초기화
 
-PlayerState 에 `ASC`와 `Attribute` 인스턴스 생성을 했다. 아마 멀티플레이 환경에서 다른 플레이어의 `Attribute` 참조를 위해 PlayerState를 선택한 것으로 생각된다.
-`ASC` 컴포넌트의 Own 액터는 반드시 `IAbilitySystemInterface`를 상속해야 하며, 컴포넌트 초기화 과정에서 Owner 클래스에 인스턴싱된 `UAttribteSet` 클래스 인스턴스를 검색하여
-자동으로 컴포넌트에 링크하고 있다.
-때문에 `Attribute`의 인스턴스 생성은 컴포넌트 초기화 전이어야 하므로 `생성자`가 가장 무난하며 특수한 이유로 동적으로 생성해야 한다면 `PostInitializeComponent()`에서 생성하면 된다.
+`GAS`를 사용하는 캐릭터(주로 캐릭터이므로 이를 기준으로 설명)는 스탯 데이터를 가지고 있는 `AttributeSet`과 시스템을 구동하는 `ASC(AbilitySystemCommponent)` 인스턴스를 가지고 있어야 한다.
+때문에 `AttributeSet`, `ASC` 인스턴스 생성 및 관리가 이번 단계에서 해야 할 목표이고, 이를 위해서 다음 사항을 결정해야 한다.
 
+1. `AttributeSet` 인스턴스를 `ASC` 인스턴스에 연결
+   - `ASC`가 데이터(`AttributeSet`)을 수정하기 위해서 당연히 `AttributeSet`의 인스턴스를 알고 있어야 한다.
+   - 때문에 `ASC`는 컴포넌트 초기화 시점에 Owner가 갖고 있는 `AttributeSet` 인스턴스들을 검색하여 자동으로 캐싱하고 있다.
+     - 샘플들이 생성자에서 `ASC`와 `AttributeSet`에서 인스턴스를 생성하는 이유가 바로 이 때문이다.
+   - 하지만 어떤 이유로 생성자 이후에 `AttributeSet`을 생성해야 한다면 다음 두가지 방법을 검토해야 할 것이다.
+     - `PostInitializeComponent()`에서 생성하면 생성자에서 `AttributeSet`을 생성하는 것과 동일한 효과를 얻을 수 있다.(즉, 자동으로 `ASC`가 검색하여 연결할 수 있다.)
+     - `ASC` 초기화(InitilalizeComponent()) 이후에 생성한다면 UAbilitySystemComponent::GetOrCreateAttributeSubobject()를 사용하여 생성한다.
 
+2. `AttributeSet`, `ASC` 인스턴스 소유자 결정
+   - 두 인스턴스 모두 캐릭터의 현재 상태를 갖고 있으므로 인스턴스 수명에 대한 문제가 중요해지기도 한다.
+     - 보통 싱글 플레이의 경우 단순하게 캐릭터에서 모두 처리해도 된다.
+   - 변신 등의 이유로 캐릭터 인스턴스를 변경해야 하는 경우, 그리고 그게 멀티플레이 게임이라면 캐릭터가 아닌 다른 곳을 생각해야 한다.
+     - 참고한 프로젝트의 경우 PlayerState를 소유자로 선택했다.
+       - PlayerController 의 경우는 서버와 로컬 플레이어만 리플리케이션 되므로 다른 클라이언트에 대한 처리가 복잡해 질 수 있다.
+       - PlayerState는 모든 클라이언트에 동기화되며 캐릭터에 PlayerState 리플리케이션 노티파이 이벤트까지 있으므로 쉽게 처리가 가능한 장점이 있다.
+
+3. 인스턴스 소유자 결정에 따른 `ASC` 초기화 시퀀스 
+    - `ASC`는 Owner와 Avatar 두개의 액터와 연결되어야 한다.
+      - Owner는 일반적인 컴포넌트 소유 액터이다. `AttributeSet` 등의 인스턴스 참조부터 Replication relevant 문제까지 일반적인 Owner의 역할을 한다.
+      - Avatar는 `ASC`에 영향받을 Pawn 이다. 애니메이션, 이펙트 플레이 같은 효과부터 `AttributeSet` 데이터 변화의 효과를 모두 표현할 액터이다.
+    - 때문에 캐릭터 변경시 반드시 `UAbilitySystemComponent::InitAbilityActorInfo()`를 호출하여 Owner와 Avatar 액터 링크를 업데이트 해야 한다.
+      - 모든 클라이언트가 이 함수를 호출해야 하므로 멀티플레이 환경에서 캐릭터가 아닌 PlayerState 또는 PlayerController 가 소유자인 경우 서버/클라이언트 별로 호출 시점이 나뉘게 된다.
+    
+결론은 시스템 구성과 초기화 방식은 크게 두가지 방법이 있고, 이 프로젝트에서는 이 두 방법을 모두 보여주기 위해 플레이어와 AI 캐릭터를 각각 다르게 구현했다.
+1. 플레이어
+    - PlayerState에서 `ASC` 및 `AttributeSet` 인스턴스를 생성하고 관리한다.
+    - 플레이어 캐릭터는 서버와 클라이언트가 각가 다른 시점에 시스템 초기화를 실행한다.
+      - 서버 (`OnPossess()`) : PlayerState를 참조해야 하므로 컨트롤러가 연결되는 시점에서 초기화를 실행한다.
+      - 클라이언트 (`OnRep_PlayerState()`) : PlayerState 인스턴스가 리플리케이션 되는 시점에서 초기화를 실행한다.
+2. AI 캐릭터
+   - AI 캐릭터는 캐릭터가 `ASC` 및 `AttributeSet` 인스턴스를 생성하고 관리한다.
+   - 때문에 서버, 클라이언트 모두 BeginPlay()에서 시스템 초기화를 실행한다.
 
