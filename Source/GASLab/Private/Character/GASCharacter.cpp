@@ -5,13 +5,14 @@
 #include "AbilitySystem/GASAbilitySystemComponent.h"
 #include "AbilitySystem/GASGameplayAbility.h"
 #include "AbilitySystem/Attributes/GASCharacterAttributeSet.h"
+#include "Character/GASCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
 AGASCharacter::AGASCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UGASCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;

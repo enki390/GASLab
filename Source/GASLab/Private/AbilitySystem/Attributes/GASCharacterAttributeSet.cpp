@@ -93,7 +93,6 @@ void UGASCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectM
 	// 여기서부터는 프로퍼티별 처리. 각 프로퍼티는 이미 변경되있다.
 	if(Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		
 	}
 	else if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
